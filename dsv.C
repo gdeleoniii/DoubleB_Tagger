@@ -59,34 +59,34 @@ void bkgsig(std::string inputFile) {
 	if(fatjetPRmassL2L3Corr[ij]<105 || fatjetPRmassL2L3Corr[ij]>135)continue;
 		
 	fatjet.push_back(ij);	
-	//if(fatjet.size()<2)continue;
+    }
+       if(fatjet.size()<2)continue;
     
-	for(unsigned int i=0; i<fatjet.size(); i++) {
-	  for(unsigned int j=0; j<i; j++) {
-	    TLorentzVector* thatJet  = (TLorentzVector*)fatjetP4->At(i);
-	    TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(j);
-	    float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
-	    if(dEta>1.3)continue;
-	    
-	    Double_t mjj = (*thatJet+*thoseJet).M();
-	    if(mjj<1000)continue; 
-	    Mjj.push_back(make_pair(i,j));
-	    
-	  }
+       for(unsigned int i=0; i<fatjet.size(); i++) {
+	 for(unsigned int j=0; j<i; j++) {
+	   TLorentzVector* thatJet  = (TLorentzVector*)fatjetP4->At(i);
+	   TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(j);
+	   float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
+	   if(dEta>1.3)continue;
+	   
+	   Double_t mjj = (*thatJet+*thoseJet).M();
+	   if(mjj<1000)continue; 
+	   Mjj.push_back(make_pair(i,j));
+	   
+	 }
 	}
+       
+
+    for(unsigned int ae = 0;ae<Mjj.size(); ae++) {
+      int ee = Mjj[0].first;
+      TLorentzVector* Jet1 = (TLorentzVector*)addjetP4->At(ee); 
+      for(int ad=0; ad<nAJets; ad++) {
+	  TLorentzVector* Jet2 = (TLorentzVector*)addjetP4->At(ad);
+	  if(Jet1->DeltaR(*Jet2)>0.1)continue; 
+	  h_doubleSV->Fill(addjet_doubleSV[ad]);
+	} 
     }
 
-    for(int ad=0; ad<nAJets; ad++)
-      {
-        TLorentzVector* Jet1 = (TLorentzVector*)addjetP4->At(ad);
-	for(unsigned int ae = 0;ae<Mjj.size(); ae++) { 
-	  int ee = Mjj[0].first;
-	  TLorentzVector* Jet2 = (TLorentzVector*)addjetP4->At(ee);
-	
-	  if(Jet1->DeltaR(*Jet2)>0.1)continue; 
-	}
-	h_doubleSV->Fill(addjet_doubleSV[ad]);
-      }
   }
   h_doubleSV->Draw();
 
