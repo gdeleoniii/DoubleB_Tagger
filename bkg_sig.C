@@ -26,10 +26,9 @@ void bkgsig(std::string inputFile) {
   //get TTree from file ...
   TreeReader data(inputFile.data());
 
-  //  TH1F* h_delR=new TH1F("","",60,0,6);
-
   Int_t before = 0;
   Int_t after  = 0; 
+
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
 
@@ -96,9 +95,4 @@ void bkgsig(std::string inputFile) {
   std::cout <<"before = "<<before<<std::endl;
   std::cout <<"after = "<<after<<std::endl;      
 
-  /*
-  TFile* outfile = new TFile(Form("deltaR_%d.root",name),"recreate");
-  h_delR->Write(Form("delR_%d",name));
-  outfile->Write();
-  */
 }
