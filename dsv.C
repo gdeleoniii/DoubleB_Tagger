@@ -21,12 +21,13 @@
 #include <TLorentzVector.h>
  
 using namespace std;
-void bkgsig(std::string inputFile) {
+void bkgsig(std::string inputFile,char name) {
   
   //get TTree from file ...
   TreeReader data(inputFile.data());
 
-  TH1F* h_doubleSV=new TH1F("","",40,-1.2,1.2);
+  TH1F* h_leaddoubleSV=new TH1F("","",40,-1.2,1.2);
+  TH1F* h_subldoubleSV=new TH1F("","",40,-1.2,1.2);
 
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -60,6 +61,7 @@ void bkgsig(std::string inputFile) {
 		
 	fatjet.push_back(ij);	
     }
+
        if(fatjet.size()<2)continue;
     
        for(unsigned int i=0; i<fatjet.size(); i++) {
@@ -68,7 +70,7 @@ void bkgsig(std::string inputFile) {
 	   TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(j);
 	   float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
 	   if(dEta>1.3)continue;
-	   
+
 	   Double_t mjj = (*thatJet+*thoseJet).M();
 	   if(mjj<1000)continue; 
 	   Mjj.push_back(make_pair(i,j));
@@ -76,18 +78,26 @@ void bkgsig(std::string inputFile) {
 	 }
 	}
        
-
+       
     for(unsigned int ae = 0;ae<Mjj.size(); ae++) {
+      int aa = Mjj[0].second;
       int ee = Mjj[0].first;
-      TLorentzVector* Jet1 = (TLorentzVector*)addjetP4->At(ee); 
+      TLorentzVector* Jet1 = (TLorentzVector*)addjetP4->At(aa); 
+      TLorentzVector* Jet2 = (TLorentzVector*)addjetP4->At(ee);
       for(int ad=0; ad<nAJets; ad++) {
-	  TLorentzVector* Jet2 = (TLorentzVector*)addjetP4->At(ad);
-	  if(Jet1->DeltaR(*Jet2)>0.1)continue; 
-	  h_doubleSV->Fill(addjet_doubleSV[ad]);
+	  TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
+	  if(Jet1->DeltaR(*Jet3)<0.1) {
+	  h_leaddoubleSV->Fill(addjet_doubleSV[ad]);
+	  }
+	  if(Jet2->DeltaR(*Jet3)<0.1) {
+	      h_subldoubleSV->Fill(addjet_doubleSV[ad]);
+	    }
 	} 
     }
 
   }
-  h_doubleSV->Draw();
-
+  TFile* outfile = new TFile(Form("dsv_%d.root",name),"recreate");
+  h_leaddoubleSV->Write(Form("leaddsv_%d",name));
+  h_subldoubleSV->Write(Form("subldsv_%d",name));
+  outfile->Write();
 }
