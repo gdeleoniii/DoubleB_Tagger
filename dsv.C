@@ -66,8 +66,8 @@ void bkgsig(std::string inputFile,char name) {
     
        for(unsigned int i=0; i<fatjet.size(); i++) {
 	 for(unsigned int j=0; j<i; j++) {
-	   TLorentzVector* thatJet  = (TLorentzVector*)fatjetP4->At(i);
-	   TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(j);
+	   TLorentzVector* thatJet  = (TLorentzVector*)fatjetP4->At(fatjet[i]);
+	   TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(fatjet[j]);
 	   float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
 	   if(dEta>1.3)continue;
 
@@ -82,8 +82,8 @@ void bkgsig(std::string inputFile,char name) {
     for(unsigned int ae = 0;ae<Mjj.size(); ae++) {
       int aa = Mjj[0].second;
       int ee = Mjj[0].first;
-      TLorentzVector* Jet1 = (TLorentzVector*)addjetP4->At(aa); 
-      TLorentzVector* Jet2 = (TLorentzVector*)addjetP4->At(ee);
+      TLorentzVector* Jet1 = (TLorentzVector*)fatetP4->At(aa); 
+      TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
       for(int ad=0; ad<nAJets; ad++) {
 	  TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
 	  if(Jet1->DeltaR(*Jet3)<0.1) {
