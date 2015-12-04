@@ -109,7 +109,11 @@ void bkgsig(std::string inputFile) {
     
   }
 
-  for(int i=0;i<20;i++)
-      std::cout << "nPass[" << i << "]= " << nPass[i] << std::endl;
+  for(int i=1;i<=19;i++) {
+    float num = nPass[i];
+    float den = nPass[0];
+    float eff = num/den;
+    std::cout << "Eff" << i << "= " << eff << std::endl;
+  }
 
 }
