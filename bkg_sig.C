@@ -5,6 +5,7 @@
 #include <TString.h>
 #include <map>
 #include <TH1.h>
+#include <TH2.h>
 #include <TFile.h>
 #include <TCanvas.h>
 #include <TF1.h>
@@ -14,7 +15,7 @@
 #include <TStyle.h>
 #include <TProfile.h>
 #include <TPad.h>
-#include "TEfficiency.h"
+#include <TStyle.h>
 #include <TStyle.h>
 #include "untuplizer.h"
 #include <TClonesArray.h>
@@ -27,8 +28,9 @@ void bkgsig(std::string inputFile) {
   //get TTree from file ...
   TreeReader data(inputFile.data());
 
-  Long64_t nPass[20]={0};
+  TH2F *h2_doubleSV   = new TH2F("","",20,-1,1,20,-1,1);
 
+  int den=0;
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     
@@ -60,11 +62,11 @@ void bkgsig(std::string inputFile) {
       if(!passFatJetLooseID[ij])continue;
       if(fatjetPRmassL2L3Corr[ij]<105 || fatjetPRmassL2L3Corr[ij]>135)continue;
       
-      fatjet.push_back(ij);	
       ss++;
+      fatjet.push_back(ij);	
     }
     
-    if(ss>=2)nPass[0]++; //number of events passing pre-selection
+    if(ss>=2)den++;
     if(fatjet.size()<2)continue;
     
     for(unsigned int i=0; i<fatjet.size(); i++) {
@@ -79,10 +81,10 @@ void bkgsig(std::string inputFile) {
 	Double_t mjj = (*thatJet+*thoseJet).M();
 	if(mjj<1000)continue; 
 	Mjj.push_back(make_pair(index_that,index_those));
-
       }
     }
     
+    int addJetIndex[2]={-1,-1};
     for(unsigned int ae = 0;ae<Mjj.size(); ae++) {
       int aa = Mjj[0].second;
       int ee = Mjj[0].first;
@@ -90,30 +92,25 @@ void bkgsig(std::string inputFile) {
       TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
       for(int ad=0; ad<nAJets; ad++) {
 	TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
-	if(Jet1->DeltaR(*Jet3)>0.1 && Jet2->DeltaR(*Jet3)>0.1)continue;
-
-	double n = -0.9;
-	for(int i=1;i<=19;i++) {
-	  if(i==1) {
-	    if(addjet_doubleSV[ad]>n)continue;
-	    nPass[i]++;
-	  }
-	  else {
-	    n+=0.1;
-	    if(addjet_doubleSV[ad]>n)continue;
-	    nPass[i]++;
-          }
-	}
+	if(Jet1->DeltaR(*Jet3)<0.1 && addJetIndex[0] < 0) { addJetIndex[0]=ad;}
+	if(Jet2->DeltaR(*Jet3)<0.1 && addJetIndex[1] < 0) { addJetIndex[1]=ad;}
       }
     }
-    
+    if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
+    h2_doubleSV->Fill(addjet_doubleSV[ addJetIndex[0]], addjet_doubleSV[addJetIndex[1]]);
+  
+  
   }
+  TFile* outfile = new TFile("SignalEff.root","recreate");    
+  h2_doubleSV->Write("signal");
+  outfile->Write();
 
-  for(int i=1;i<=19;i++) {
-    float num = nPass[i];
-    float den = nPass[0];
-    float eff = num/den;
-    std::cout << "Eff" << i << "= " << eff << std::endl;
-  }
+  setNCUStyle();
+  TStyle *gStyle;
+  gStyle->SetPalette(55);
+
+  h2_doubleSV->Draw("colz");
+  std::cout << "Integrate form 19 to 20 = " << h2_doubleSV->Integral(19,20) << std::endl;
+  std::cout << "denominator = " << den << std::endl;
 
 }
