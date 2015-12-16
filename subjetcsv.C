@@ -87,8 +87,8 @@ void bkgsig(std::string inputFile) {
       int aa = Mjj[0].second;
       int ee = Mjj[0].first;
 
-      h2_subjet1CSV->Fill(FATsubjetSDCSV[aa][0],FATsubjetSDCSV[aa][1]);
-      h2_subjet2CSV->Fill(FATsubjetSDCSV[ee][0],FATsubjetSDCSV[ee][1]);
+      h2_subjet1CSV->Fill(FATsubjetSDCSV[aa][0],FATsubjetSDCSV[aa][1]); //2 subjets of the leading fat jet
+      h2_subjet2CSV->Fill(FATsubjetSDCSV[ee][0],FATsubjetSDCSV[ee][1]); //2 subjets of the sub-leading fat jet
     }
 
         
