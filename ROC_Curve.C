@@ -15,6 +15,7 @@
 #include <TStyle.h>
 #include <TProfile.h>
 #include <TPad.h>
+#include <THnSparse.h>
 #include <TStyle.h>
 #include <TStyle.h>
 #include "untuplizer.h"
@@ -29,7 +30,8 @@ void bkgsig(std::string inputFile) {
   TreeReader data(inputFile.data());
 
   TH2F *h2_doubleSV   = new TH2F("","",20,-1,1,20,-1,1);
-
+  TH2F *h2_fatjetCSV = new TH2F("","",20,0,1,20,0,1);
+ 
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
     
@@ -61,10 +63,6 @@ void bkgsig(std::string inputFile) {
       if(fabs(thisJet->Eta())>2.4)continue;
       if(!passFatJetLooseID[ij])continue;
       if(fatjetPRmassL2L3Corr[ij]<105 || fatjetPRmassL2L3Corr[ij]>135)continue;
-      //if(fatjetCSV[ij]<0.605)continue; //2nd roc curve
-      if( FATnSubSDJet[ij] != 2 ) continue; //3rd roc curve
-      if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue; //3rd roc curve 
-      
       fatjet.push_back(ij);	
     }
     
@@ -82,31 +80,49 @@ void bkgsig(std::string inputFile) {
 	Double_t mjj = (*thatJet+*thoseJet).M();
 	if(mjj<1000)continue; 
 	Mjj.push_back(make_pair(index_that,index_those));
+
       }
     }
     
-    int addJetIndex[2]={-1,-1};
-    for(unsigned int ae = 0;ae<Mjj.size(); ae++) {
-      int aa = Mjj[0].second;
-      int ee = Mjj[0].first;
-      TLorentzVector* Jet1 = (TLorentzVector*)fatjetP4->At(aa); 
-      TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
-      for(int ad=0; ad<nAJets; ad++) {
-	TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
-	if(Jet1->DeltaR(*Jet3)<0.1 && addJetIndex[0] < 0) { addJetIndex[0]=ad;} // first add jet to pass the delta r cut
-	if(Jet2->DeltaR(*Jet3)<0.1 && addJetIndex[1] < 0) { addJetIndex[1]=ad;} // first add jet to pass the delta r cut
-      }
+    if(Mjj.size()<1)continue;   
+
+    int aa = Mjj[0].second;
+    int ee = Mjj[0].first;
+    TLorentzVector* Jet1 = (TLorentzVector*)fatjetP4->At(aa); 
+    TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
+
+    h2_fatjetCSV->Fill(fatjetCSV[aa],fatjetCSV[ee]);
+   
+    int addJetIndex[2]={-1,-1}; 
+    for(int ad=0; ad<nAJets; ad++) {
+      TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
+      if(Jet1->DeltaR(*Jet3)<0.1 && addJetIndex[0] < 0) { addJetIndex[0]=ad;} // first add jet to pass the delta r cut
+      if(Jet2->DeltaR(*Jet3)<0.1 && addJetIndex[1] < 0) { addJetIndex[1]=ad;} // first add jet to pass the delta r cut
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
-    h_leaddoubleSV->Fill(addjet_doubleSV[addJetIndex[0]]);
-    h_subldoubleSV->Fill(addjet_doubleSV[addJetIndex[1]]);
     h2_doubleSV->Fill(addjet_doubleSV[ addJetIndex[0]], addjet_doubleSV[addJetIndex[1]]);
-  
-  
+    
   }
   
-  TFile* outfile = new TFile("SignalEff3.root","recreate");    
-  h2_doubleSV->Write("signal3");
+
+  TFile* outfile = new TFile("SignalEff.root","recreate");    
+  h2_doubleSV->Write("doublebtagging");
+  h2_fatjetCSV->Write("fatjetcsv");
   outfile->Write();
   
+
+  setNCUStyle();
+  TStyle *gStyle;
+  gStyle->SetPalette(55);
+
+  
+  TCanvas* f = new TCanvas("f","",0,0,600,600);
+  f->cd();
+  h2_doubleSV->Draw("colz");
+  
+  
+  TCanvas* f1 = new TCanvas("f1","",0,0,600,600);
+  f1->cd();
+  h2_fatjetCSV->Draw("colz");
+
 }
