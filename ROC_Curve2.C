@@ -104,10 +104,12 @@ void bkgsig(std::string inputFile) {
     h2_doubleSV->Fill(addjet_doubleSV[ addJetIndex[0]], addjet_doubleSV[addJetIndex[1]]); //for DBT
     
     double subjetCSV[2]={-1,-1};
+    //leading fatjet for subjetCSV
     for(int is=0; is < FATnSubSDJet[aa]; is++) {
       subjetCSV[0]=    FATsubjetSDCSV[aa][is];
     }
 
+    //sub-leading fatjet for subjetCSV
     for(int is=0; is < FATnSubSDJet[ee]; is++) {
       subjetCSV[1]=    FATsubjetSDCSV[ee][is];
     }
