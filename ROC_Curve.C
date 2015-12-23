@@ -31,6 +31,12 @@ void bkgsig(std::string inputFile) {
 
   TH2F *h2_doubleSV   = new TH2F("","",20,-1,1,20,-1,1);
   TH2F *h2_fatjetCSV = new TH2F("","",20,0,1,20,0,1);
+
+  const int nDim=4;
+  int nbins[nDim]={10,10,10,10};
+  double xmin[nDim]={0,0,0,0};
+  double xmax[nDim]={1,1,1,1};
+  THnSparseD* hs = new THnSparseD("hs", "hs", nDim, nbins, xmin, xmax);
  
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -91,8 +97,11 @@ void bkgsig(std::string inputFile) {
     TLorentzVector* Jet1 = (TLorentzVector*)fatjetP4->At(aa); 
     TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
 
+    //------for fatjetCSV-----
     h2_fatjetCSV->Fill(fatjetCSV[aa],fatjetCSV[ee]);
    
+
+    //------for double b-tagging-----
     int addJetIndex[2]={-1,-1}; 
     for(int ad=0; ad<nAJets; ad++) {
       TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
@@ -101,28 +110,30 @@ void bkgsig(std::string inputFile) {
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
     h2_doubleSV->Fill(addjet_doubleSV[ addJetIndex[0]], addjet_doubleSV[addJetIndex[1]]);
-    
+
+
+    //------for subjetCSV-------
+    int fatjetIndex[2]={Mjj[0].second, Mjj[0].first};
+    double subjetCSV[4]={-1,-1,-1,-1};
+
+    for(int i=0; i<2; i++)
+      {
+	int ijet = fatjetIndex[i];
+	for(int isub=0; isub < FATnSubSDJet[ijet]; isub++)
+	  {
+	    int vectorID = i*2 + isub;
+	    subjetCSV[vectorID]=    FATsubjetSDCSV[ijet][isub];
+	  }
+      }
+    hs->Fill(subjetCSV);
+        
   }
   
-
+  
   TFile* outfile = new TFile("SignalEff.root","recreate");    
   h2_doubleSV->Write("doublebtagging");
   h2_fatjetCSV->Write("fatjetcsv");
+  hs->Write("subjetcsv");
   outfile->Write();
   
-
-  setNCUStyle();
-  TStyle *gStyle;
-  gStyle->SetPalette(55);
-
-  
-  TCanvas* f = new TCanvas("f","",0,0,600,600);
-  f->cd();
-  h2_doubleSV->Draw("colz");
-  
-  
-  TCanvas* f1 = new TCanvas("f1","",0,0,600,600);
-  f1->cd();
-  h2_fatjetCSV->Draw("colz");
-
 }
