@@ -71,8 +71,8 @@ void eff() {
   float densig2 = ncutsig[0];
   float denbkg2 = ncutbkg[0];
   for(int q=0;q<10;q++) {
-    float numsig2 = ncutsig[q+1];
-    float numbkg2 = ncutbkg[q+1];
+    float numsig2 = ncutsig[q];
+    float numbkg2 = ncutbkg[q];
     sig2[q] = numsig2/densig2;
     bkg2[q] = 1-(numbkg2/denbkg2);
   }
