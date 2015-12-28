@@ -37,7 +37,7 @@ void eff() {
   THnSparseD* h5  = (THnSparseD*)(file[0]->Get("subjetcsv"));
  
   //--------------For DBT and fatjetCSV------------
-  float bkg0[19], sig0[19],bkg1[19], sig1[19],bkg2[9], sig2[9];
+  float bkg0[19], sig0[19],bkg1[19], sig1[19],bkg2[10], sig2[10];
   float densig0 = h0->Integral(1,20,1,20); //denominator dbt signal
   float denbkg0 = h2->Integral(1,20,1,20); //denominator dbt background
   float densig1 = h1->Integral(1,20,1,20); //denominator csv signal
@@ -55,8 +55,8 @@ void eff() {
 
 
   //---------For subjetcsv-----------------
-  Long64_t ncutsig[9]= {0};
-  Long64_t ncutbkg[9]= {0};
+  Long64_t ncutsig[10]= {0};
+  Long64_t ncutbkg[10]= {0};
   for(int q=0;q<10;q++)
     for(int i=q+1;i<=10; i++)
       for(int j=q+1; j<=10; j++)
@@ -70,7 +70,7 @@ void eff() {
 
   float densig2 = ncutsig[0];
   float denbkg2 = ncutbkg[0];
-  for(int q=0;q<9;q++) {
+  for(int q=0;q<10;q++) {
     float numsig2 = ncutsig[q+1];
     float numbkg2 = ncutbkg[q+1];
     sig2[q] = numsig2/densig2;
