@@ -35,18 +35,15 @@ void eff() {
   TH2D* h3  = (TH2D*)(file[1]->Get("fatjetcsv")); //csv background
   THnSparseD* h4  = (THnSparseD*)(file[0]->Get("subjetcsv"));
   THnSparseD* h5  = (THnSparseD*)(file[1]->Get("subjetcsv"));
-  THnSparseD* h6  = (THnSparseD*)(file[0]->Get("subjetcsv1"));
-  THnSparseD* h7  = (THnSparseD*)(file[1]->Get("subjetcsv1"));
-  THnSparseD* h8  = (THnSparseD*)(file[0]->Get("subjetcsv2"));
-  THnSparseD* h9  = (THnSparseD*)(file[1]->Get("subjetcsv2"));
+  
  
-  float bkg0[19], sig0[19],bkg1[19], sig1[19],bkg2[10], sig2[10], bkg3[10], sig3[10], bkg4[10], sig4[10];
+  float bkg0[20], sig0[20],bkg1[20], sig1[20],bkg2[10], sig2[10], bkg3[10], sig3[10], bkg4[10], sig4[10];
   
   float densig0 = h0->Integral(1,20,1,20); //denominator dbt signal
   float denbkg0 = h2->Integral(1,20,1,20); //denominator dbt background
   float densig1 = h1->Integral(1,20,1,20); //denominator csv signal
   float denbkg1 = h3->Integral(1,20,1,20); //denominator csv background
-  for(int i=0; i<19;i++) {
+  for(int i=0; i<20;i++) {
     float numsig0 = h0->Integral(i+1,20,i+1,20);
     float numbkg0 = h2->Integral(i+1,20,i+1,20);
     float numsig1 = h1->Integral(i+1,20,i+1,20);
@@ -55,6 +52,11 @@ void eff() {
     sig0[i]=numsig0/densig0;
     bkg1[i]=1-(numbkg1/denbkg1);
     sig1[i]=numsig1/densig1;
+
+    //std::cout << "Events double signal"<< i << " = " <<numsig0 << std::endl;
+    //std::cout << "Events double background"<< i << " = " << numbkg0 << std::endl;
+    std::cout << "Events fatjet signal"<< i << " = " <<numsig1 << std::endl;
+    std::cout << "Events fatjet background"<< i << " = " << numbkg1 << std::endl;
   }
 
 
@@ -65,29 +67,113 @@ void eff() {
   Long64_t ncutbkg1[10]= {0};
   Long64_t ncutsig2[10]= {0};
   Long64_t ncutbkg2[10]= {0};
-  for(int q=0;q<10;q++) {
-    for(int i=q+1;i<=10; i++) {
-      for(int j=q+1; j<=10; j++) {
+  
 
-	int index2[2]={i,j};
-	ncutsig2[q] += h8->GetBinContent(index2);
-	ncutbkg2[q] += h9->GetBinContent(index2);
-
-        for(int k=q+1; k<=10; k++) {
-	  
-	  int index1[3]={i,j,k};
-	  ncutsig1[q] += h6->GetBinContent(index1);
-	  ncutbkg1[q] += h7->GetBinContent(index1);
-          
+  for(int q=0;q<10;q++)
+    for(int i=q+1;i<=10; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=q+1; k<=10; k++)
 	  for(int m=q+1; m<=10; m++) {
-              int index[4]={i,j,k,m};
-              ncutsig[q] += h4->GetBinContent(index);
-	      ncutbkg[q] += h5->GetBinContent(index);
+	    int index[4]={i,j,k,m};
+	    ncutsig[q] += h4->GetBinContent(index);
+	    ncutbkg[q] += h5->GetBinContent(index);
 	  }
-	}
-      }
-    }
+  
+  //----------exaclty 3 subjet csv -------------
+  
+  for(int q=0;q<10;q++){
+    for(int i=0;i<=q; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=q+1; k<=10; k++)
+          for(int m=q+1; m<=10; m++){
+	    int index[4]={i,j,k,m};
+	    ncutsig1[q] += h4->GetBinContent(index);
+	    ncutbkg1[q] += h5->GetBinContent(index);
+	  }
+    
+    for(int i=q+1;i<=10; i++)
+      for(int j=0; j<=q; j++)
+        for(int k=q+1; k<=10; k++)
+          for(int m=q+1; m<=10; m++) {
+	    int index[4]={i,j,k,m};
+	    ncutsig1[q] += h4->GetBinContent(index);
+	    ncutbkg1[q] += h5->GetBinContent(index);
+          }
+    for(int i=q+1;i<=10; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=0; k<=q; k++)
+          for(int m=q+1; m<=10; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig1[q] += h4->GetBinContent(index);
+            ncutbkg1[q] += h5->GetBinContent(index);
+          }
+    for(int i=q+1;i<=10; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=q+1; k<=10; k++)
+          for(int m=0; m<=q; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig1[q] += h4->GetBinContent(index);
+            ncutbkg1[q] += h5->GetBinContent(index);
+          }
   }
+
+  //--------------exactly 2 subjet csv----------------
+  for(int q=0;q<10;q++){
+    for(int i=0;i<=q; i++)
+      for(int j=0; j<=q; j++)
+        for(int k=q+1; k<=10; k++)
+          for(int m=q+1; m<=10; m++){
+            int index[4]={i,j,k,m};
+            ncutsig2[q] += h4->GetBinContent(index);
+            ncutbkg2[q] += h5->GetBinContent(index);
+          }
+
+    for(int i=0;i<=q; i++)
+      for(int j=q+1; j<=q; j++)
+        for(int k=0; k<=q; k++)
+          for(int m=q+1; m<=10; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig2[q] += h4->GetBinContent(index);
+            ncutbkg2[q] += h5->GetBinContent(index);
+          }
+
+    for(int i=0;i<=q; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=q+1; k<=10; k++)
+          for(int m=0; m<=q; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig2[q] += h4->GetBinContent(index);
+            ncutbkg2[q] += h5->GetBinContent(index);
+          }
+
+    for(int i=q+1;i<=10; i++)
+      for(int j=0; j<=q; j++)
+        for(int k=0; k<=q; k++)
+          for(int m=q+1; m<=10; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig2[q] += h4->GetBinContent(index);
+            ncutbkg2[q] += h5->GetBinContent(index);
+          }
+
+    for(int i=q+1;i<=10; i++)
+      for(int j=0; j<=q; j++)
+	for(int k=q+1; k<=10; k++)
+          for(int m=0; m<=q; m++) {
+            int index[4]={i,j,k,m};
+	    ncutsig2[q] += h4->GetBinContent(index);
+	    ncutbkg2[q] += h5->GetBinContent(index);
+	  }
+
+    for(int i=q+1;i<=10; i++)
+      for(int j=q+1; j<=10; j++)
+        for(int k=0; k<=q; k++)
+          for(int m=0; m<=q; m++) {
+            int index[4]={i,j,k,m};
+            ncutsig2[q] += h4->GetBinContent(index);
+            ncutbkg2[q] += h5->GetBinContent(index);
+          }
+  }
+
   float densig2 = ncutsig[0];
   float denbkg2 = ncutbkg[0];
   float densig3 = ncutsig1[0];
@@ -107,6 +193,10 @@ void eff() {
     bkg3[q] = 1-(numbkg3/denbkg3);
     sig4[q] = numsig4/densig4;
     bkg4[q] = 1-(numbkg4/denbkg4);
+    //std::cout << "Events exactly 3 signal"<< q << " = " << ncutsig1[q] << std::endl;
+    //std::cout << "Events exactly 3 background"<< q << " = " << ncutbkg1[q] << std::endl;
+    //std::cout << "Events exactly 2 signal"<< q << " = " << ncutsig2[q] << std::endl;
+    //std::cout << "Events exactly 2 background"<< q << " = " << ncutbkg2[q] << std::endl;
   }
 
 
@@ -114,8 +204,8 @@ void eff() {
   setNCUStyle();
   TCanvas* c3 =  new TCanvas("c3","c3",0,0,600,600);                                                           
   c3->cd();
-  TGraph *roc_curve = new TGraph(19,sig0,bkg0);
-  TGraph *roc2 = new TGraph(19,sig1,bkg1);
+  TGraph *roc_curve = new TGraph(20,sig0,bkg0);
+  TGraph *roc2 = new TGraph(20,sig1,bkg1);
   TGraph *roc3 = new TGraph(10,sig2,bkg2);
   TGraph *roc4 = new TGraph(10,sig3,bkg3);
   TGraph *roc5 = new TGraph(10,sig4,bkg4);
@@ -139,6 +229,7 @@ void eff() {
   roc2->SetMarkerColor(kBlue+2);
   roc2->SetLineColor(kBlue-3);
   roc2->Draw("pc");
+  
   roc3->SetLineWidth(2);
   roc3->SetLineStyle(6);
   roc3->SetMarkerStyle(21);
@@ -160,6 +251,7 @@ void eff() {
   roc5->SetMarkerColor(kOrange+8);
   roc5->SetLineColor(kOrange+7);
   roc5->Draw("pc");
+  
 
   TLegend *legend2 = new TLegend(0.16,0.40,.61,0.49);
   //legend2->SetHeader("ADD Jet Double SV");
