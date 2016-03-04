@@ -37,6 +37,10 @@ void bkgsig(std::string inputFile) {
   double xmin[nDim]={0,0,0,0};
   double xmax[nDim]={1,1,1,1};
   THnSparseD* hs = new THnSparseD("hs", "hs", nDim, nbins, xmin, xmax);
+
+  Long64_t nExact4[10]={0};
+  Long64_t nExact3[10]={0};
+  Long64_t nExact2[10]={0};
  
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -113,27 +117,49 @@ void bkgsig(std::string inputFile) {
 
 
     //------for subjetCSV-------
+
+    Long64_t nSubJetPass[10]={0};
+
     int fatjetIndex[2]={Mjj[0].second, Mjj[0].first};
     double subjetCSV[4]={-1,-1,-1,-1};
 
-    for(int i=0; i<2; i++)
-      {
-	int ijet = fatjetIndex[i];
-	for(int isub=0; isub < FATnSubSDJet[ijet]; isub++)
-	  {
-	    int vectorID = i*2 + isub;
-	    subjetCSV[vectorID]=    FATsubjetSDCSV[ijet][isub];
-	  }
-      }
-    hs->Fill(subjetCSV);
-        
+    Float_t n = 0;
+    for(int q=0;q<10;q++) {  
+      for(int i=0; i<2; i++)
+	{
+	  int ijet = fatjetIndex[i];
+	  for(int isub=0; isub < FATnSubSDJet[ijet]; isub++)
+	    {
+	      int vectorID = i*2 + isub;
+	      subjetCSV[vectorID]=    FATsubjetSDCSV[ijet][isub];
+	      if(FATsubjetSDCSV[ijet][isub]>n)nSubJetPass[q]++;
+	    }
+	}
+      hs->Fill(subjetCSV);
+      if(nSubJetPass[q]==2) nExact2[q]++;
+      if(nSubJetPass[q]==3) nExact3[q]++;
+      if(nSubJetPass[q]==4) nExact4[q]++;
+      n += 0.1;
+    }   
+
+
   }
   
-  
+  /*  
   TFile* outfile = new TFile("SignalEff.root","recreate");    
   h2_doubleSV->Write("doublebtagging");
   h2_fatjetCSV->Write("fatjetcsv");
   hs->Write("subjetcsv");
   outfile->Write();
+  */
+
+  ofstream fout;
+  fout.open("subjet.dat");
+
+  for(int q=0;q<10;q++){
+    std::cout << nExact4[q] << " " << nExact3[q] << " " << nExact2[q] << std::endl; 
+    fout << nExact4[q] << " " << nExact3[q] << " " << nExact2[q] << endl;  
+  }
+  fout.close();
   
 }
