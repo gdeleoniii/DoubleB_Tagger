@@ -100,7 +100,7 @@ void qcd() {
   Double_t ldsv8  = 797.3526900/h_leadDSV8->Integral();
   Double_t ldsv9  = 79.02553776/h_leadDSV9->Integral();
   Double_t ldsv10 = 25.09505908/h_leadDSV10->Integral();
-  Double_t ldsv11 = 25.09505908/h_leadDSV11->Integral();
+  Double_t ldsv11 = 4.707368272/h_leadDSV11->Integral();
   Double_t ldsv12 = 1.621316920/h_leadDSV12->Integral();
 
   TH1F* h_leadDSV = (TH1F*)h_leadDSV7->Clone("h_leadDSV");
@@ -118,7 +118,7 @@ void qcd() {
   Double_t sdsv8  = 797.3526900/h_sublDSV8->Integral();
   Double_t sdsv9  = 79.02553776/h_sublDSV9->Integral();
   Double_t sdsv10 = 25.09505908/h_sublDSV10->Integral();
-  Double_t sdsv11 = 25.09505908/h_sublDSV11->Integral();
+  Double_t sdsv11 = 4.707368272/h_sublDSV11->Integral();
   Double_t sdsv12 = 1.621316920/h_sublDSV12->Integral();
 
   TH1F* h_sublDSV = (TH1F*)h_sublDSV7->Clone("h_sublDSV");
@@ -136,7 +136,7 @@ void qcd() {
   Double_t lpt8  = 797.3526900/h_leadPt8->Integral();
   Double_t lpt9  = 79.02553776/h_leadPt9->Integral();
   Double_t lpt10 = 25.09505908/h_leadPt10->Integral();
-  Double_t lpt11 = 25.09505908/h_leadPt11->Integral();
+  Double_t lpt11 = 4.707368272/h_leadPt11->Integral();
   Double_t lpt12 = 1.621316920/h_leadPt12->Integral();
 
   TH1F* h_leadPt = (TH1F*)h_leadPt7->Clone("h_leadPt");
@@ -154,7 +154,7 @@ void qcd() {
   Double_t spt8  = 797.3526900/h_sublPt8->Integral();
   Double_t spt9  = 79.02553776/h_sublPt9->Integral();
   Double_t spt10 = 25.09505908/h_sublPt10->Integral();
-  Double_t spt11 = 25.09505908/h_sublPt11->Integral();
+  Double_t spt11 = 4.707368272/h_sublPt11->Integral();
   Double_t spt12 = 1.621316920/h_sublPt12->Integral();
 
   TH1F* h_sublPt = (TH1F*)h_sublPt7->Clone("h_sublPt");
@@ -172,7 +172,7 @@ void qcd() {
   Double_t lpr8  = 797.3526900/h_leadPR8->Integral();
   Double_t lpr9  = 79.02553776/h_leadPR9->Integral();
   Double_t lpr10 = 25.09505908/h_leadPR10->Integral();
-  Double_t lpr11 = 25.09505908/h_leadPR11->Integral();
+  Double_t lpr11 = 4.707368272/h_leadPR11->Integral();
   Double_t lpr12 = 1.621316920/h_leadPR12->Integral();
 
   TH1F* h_leadPR = (TH1F*)h_leadPR7->Clone("h_leadPR");
@@ -190,7 +190,7 @@ void qcd() {
   Double_t spr8  = 797.3526900/h_sublPR8->Integral();
   Double_t spr9  = 79.02553776/h_sublPR9->Integral();
   Double_t spr10 = 25.09505908/h_sublPR10->Integral();
-  Double_t spr11 = 25.09505908/h_sublPR11->Integral();
+  Double_t spr11 = 4.707368272/h_sublPR11->Integral();
   Double_t spr12 = 1.621316920/h_sublPR12->Integral();
 
   TH1F* h_sublPR = (TH1F*)h_sublPR7->Clone("h_sublPR");
@@ -208,7 +208,7 @@ void qcd() {
   Double_t leta8  = 797.3526900/h_leadEta8->Integral();
   Double_t leta9  = 79.02553776/h_leadEta9->Integral();
   Double_t leta10 = 25.09505908/h_leadEta10->Integral();
-  Double_t leta11 = 25.09505908/h_leadEta11->Integral();
+  Double_t leta11 = 4.707368272/h_leadEta11->Integral();
   Double_t leta12 = 1.621316920/h_leadEta12->Integral();
 
   TH1F* h_leadEta = (TH1F*)h_leadEta7->Clone("h_leadEta");
@@ -221,12 +221,12 @@ void qcd() {
   h_leadEta->Add(h_leadEta11,leta11);
   h_leadEta->Add(h_leadEta12,leta12);
 
-  //-------lead eta-------
+  //------ subl eta-------
   Double_t seta7  = 8654.49315/h_sublEta7->Integral();
   Double_t seta8  = 797.3526900/h_sublEta8->Integral();
   Double_t seta9  = 79.02553776/h_sublEta9->Integral();
   Double_t seta10 = 25.09505908/h_sublEta10->Integral();
-  Double_t seta11 = 25.09505908/h_sublEta11->Integral();
+  Double_t seta11 = 4.707368272/h_sublEta11->Integral();
   Double_t seta12 = 1.621316920/h_sublEta12->Integral();
 
   TH1F* h_sublEta = (TH1F*)h_sublEta7->Clone("h_sublEta");
@@ -244,7 +244,7 @@ void qcd() {
   Double_t mjj8  = 797.3526900/h_Mjj8->Integral();
   Double_t mjj9  = 79.02553776/h_Mjj9->Integral();
   Double_t mjj10 = 25.09505908/h_Mjj10->Integral();
-  Double_t mjj11 = 25.09505908/h_Mjj11->Integral();
+  Double_t mjj11 = 4.707368272/h_Mjj11->Integral();
   Double_t mjj12 = 1.621316920/h_Mjj12->Integral();
 
   TH1F* h_Mjj = (TH1F*)h_Mjj7->Clone("h_Mjj");
@@ -262,7 +262,7 @@ void qcd() {
   Double_t deta8  = 797.3526900/h_DelEta8->Integral();
   Double_t deta9  = 79.02553776/h_DelEta9->Integral();
   Double_t deta10 = 25.09505908/h_DelEta10->Integral();
-  Double_t deta11 = 25.09505908/h_DelEta11->Integral();
+  Double_t deta11 = 4.707368272/h_DelEta11->Integral();
   Double_t deta12 = 1.621316920/h_DelEta12->Integral();
 
   TH1F* h_DelEta = (TH1F*)h_DelEta7->Clone("h_DelEta");
