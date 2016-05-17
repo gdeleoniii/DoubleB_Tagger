@@ -96,188 +96,116 @@ void qcd() {
 
 
   //-------Lead DSV-------
-  Double_t ldsv7  = 8654.49315/h_leadDSV7->Integral();
-  Double_t ldsv8  = 797.3526900/h_leadDSV8->Integral();
-  Double_t ldsv9  = 79.02553776/h_leadDSV9->Integral();
-  Double_t ldsv10 = 25.09505908/h_leadDSV10->Integral();
-  Double_t ldsv11 = 4.707368272/h_leadDSV11->Integral();
-  Double_t ldsv12 = 1.621316920/h_leadDSV12->Integral();
+  Double_t norm7  = 2684.*8654.49315/7910182;
+  Double_t norm8  = 2684.*797.3526900/7205073;
+  Double_t norm9  = 2684.*79.02553776/3841262;
+  Double_t norm10 = 2684.*25.09505908/3984898;
+  Double_t norm11 = 2684.*4.707368272/3566431;
+  Double_t norm12 = 2684.*1.621316920/3714871;
 
   TH1F* h_leadDSV = (TH1F*)h_leadDSV7->Clone("h_leadDSV");
   h_leadDSV->Reset();
   
-  h_leadDSV->Add(h_leadDSV7,ldsv7);
-  h_leadDSV->Add(h_leadDSV8,ldsv8);
-  h_leadDSV->Add(h_leadDSV9,ldsv9);
-  h_leadDSV->Add(h_leadDSV10,ldsv10);
-  h_leadDSV->Add(h_leadDSV11,ldsv11);
-  h_leadDSV->Add(h_leadDSV12,ldsv12);
-
-  //-------Sublead DSV-------                                                                                                                             
-  Double_t sdsv7  = 8654.49315/h_sublDSV7->Integral();
-  Double_t sdsv8  = 797.3526900/h_sublDSV8->Integral();
-  Double_t sdsv9  = 79.02553776/h_sublDSV9->Integral();
-  Double_t sdsv10 = 25.09505908/h_sublDSV10->Integral();
-  Double_t sdsv11 = 4.707368272/h_sublDSV11->Integral();
-  Double_t sdsv12 = 1.621316920/h_sublDSV12->Integral();
+  h_leadDSV->Add(h_leadDSV7,norm7);
+  h_leadDSV->Add(h_leadDSV8,norm8);
+  h_leadDSV->Add(h_leadDSV9,norm9);
+  h_leadDSV->Add(h_leadDSV10,norm10);
+  h_leadDSV->Add(h_leadDSV11,norm11);
+  h_leadDSV->Add(h_leadDSV12,norm12);
 
   TH1F* h_sublDSV = (TH1F*)h_sublDSV7->Clone("h_sublDSV");
   h_sublDSV->Reset();
 
-  h_sublDSV->Add(h_sublDSV7,sdsv7);
-  h_sublDSV->Add(h_sublDSV8,sdsv8);
-  h_sublDSV->Add(h_sublDSV9,sdsv9);
-  h_sublDSV->Add(h_sublDSV10,sdsv10);
-  h_sublDSV->Add(h_sublDSV11,sdsv11);
-  h_sublDSV->Add(h_sublDSV12,sdsv12);
-
-  //-------lead Pt-------                                                                                                                            
-  Double_t lpt7  = 8654.49315/h_leadPt7->Integral();
-  Double_t lpt8  = 797.3526900/h_leadPt8->Integral();
-  Double_t lpt9  = 79.02553776/h_leadPt9->Integral();
-  Double_t lpt10 = 25.09505908/h_leadPt10->Integral();
-  Double_t lpt11 = 4.707368272/h_leadPt11->Integral();
-  Double_t lpt12 = 1.621316920/h_leadPt12->Integral();
+  h_sublDSV->Add(h_sublDSV7,norm7);
+  h_sublDSV->Add(h_sublDSV8,norm8);
+  h_sublDSV->Add(h_sublDSV9,norm9);
+  h_sublDSV->Add(h_sublDSV10,norm10);
+  h_sublDSV->Add(h_sublDSV11,norm11);
+  h_sublDSV->Add(h_sublDSV12,norm12);
 
   TH1F* h_leadPt = (TH1F*)h_leadPt7->Clone("h_leadPt");
   h_leadPt->Reset();
 
-  h_leadPt->Add(h_leadPt7,lpt7);
-  h_leadPt->Add(h_leadPt8,lpt8);
-  h_leadPt->Add(h_leadPt9,lpt9);
-  h_leadPt->Add(h_leadPt10,lpt10);
-  h_leadPt->Add(h_leadPt11,lpt11);
-  h_leadPt->Add(h_leadPt12,lpt12);
-
-  //-------Sublead Pt------                                                                                                                            
-  Double_t spt7  = 8654.49315/h_sublPt7->Integral();
-  Double_t spt8  = 797.3526900/h_sublPt8->Integral();
-  Double_t spt9  = 79.02553776/h_sublPt9->Integral();
-  Double_t spt10 = 25.09505908/h_sublPt10->Integral();
-  Double_t spt11 = 4.707368272/h_sublPt11->Integral();
-  Double_t spt12 = 1.621316920/h_sublPt12->Integral();
+  h_leadPt->Add(h_leadPt7,norm7);
+  h_leadPt->Add(h_leadPt8,norm8);
+  h_leadPt->Add(h_leadPt9,norm9);
+  h_leadPt->Add(h_leadPt10,norm10);
+  h_leadPt->Add(h_leadPt11,norm11);
+  h_leadPt->Add(h_leadPt12,norm12);
 
   TH1F* h_sublPt = (TH1F*)h_sublPt7->Clone("h_sublPt");
   h_sublPt->Reset();
 
-  h_sublPt->Add(h_sublPt7,spt7);
-  h_sublPt->Add(h_sublPt8,spt8);
-  h_sublPt->Add(h_sublPt9,spt9);
-  h_sublPt->Add(h_sublPt10,spt10);
-  h_sublPt->Add(h_sublPt11,spt11);
-  h_sublPt->Add(h_sublPt12,spt12);
-
-  //-------lead PR-------                                                                                                                             
-  Double_t lpr7  = 8654.49315/h_leadPR7->Integral();
-  Double_t lpr8  = 797.3526900/h_leadPR8->Integral();
-  Double_t lpr9  = 79.02553776/h_leadPR9->Integral();
-  Double_t lpr10 = 25.09505908/h_leadPR10->Integral();
-  Double_t lpr11 = 4.707368272/h_leadPR11->Integral();
-  Double_t lpr12 = 1.621316920/h_leadPR12->Integral();
+  h_sublPt->Add(h_sublPt7,norm7);
+  h_sublPt->Add(h_sublPt8,norm8);
+  h_sublPt->Add(h_sublPt9,norm9);
+  h_sublPt->Add(h_sublPt10,norm10);
+  h_sublPt->Add(h_sublPt11,norm11);
+  h_sublPt->Add(h_sublPt12,norm12);
 
   TH1F* h_leadPR = (TH1F*)h_leadPR7->Clone("h_leadPR");
   h_leadPR->Reset();
 
-  h_leadPR->Add(h_leadPR7,lpr7);
-  h_leadPR->Add(h_leadPR8,lpr8);
-  h_leadPR->Add(h_leadPR9,lpr9);
-  h_leadPR->Add(h_leadPR10,lpr10);
-  h_leadPR->Add(h_leadPR11,lpr11);
-  h_leadPR->Add(h_leadPR12,lpr12);
-
-  //-------Sublead PR------                                                                                                                             
-  Double_t spr7  = 8654.49315/h_sublPR7->Integral();
-  Double_t spr8  = 797.3526900/h_sublPR8->Integral();
-  Double_t spr9  = 79.02553776/h_sublPR9->Integral();
-  Double_t spr10 = 25.09505908/h_sublPR10->Integral();
-  Double_t spr11 = 4.707368272/h_sublPR11->Integral();
-  Double_t spr12 = 1.621316920/h_sublPR12->Integral();
+  h_leadPR->Add(h_leadPR7,norm7);
+  h_leadPR->Add(h_leadPR8,norm8);
+  h_leadPR->Add(h_leadPR9,norm9);
+  h_leadPR->Add(h_leadPR10,norm10);
+  h_leadPR->Add(h_leadPR11,norm11);
+  h_leadPR->Add(h_leadPR12,norm12);
 
   TH1F* h_sublPR = (TH1F*)h_sublPR7->Clone("h_sublPR");
   h_sublPR->Reset();
 
-  h_sublPR->Add(h_sublPR7,spr7);
-  h_sublPR->Add(h_sublPR8,spr8);
-  h_sublPR->Add(h_sublPR9,spr9);
-  h_sublPR->Add(h_sublPR10,spr10);
-  h_sublPR->Add(h_sublPR11,spr11);
-  h_sublPR->Add(h_sublPR12,spr12);
-
-  //-------lead eta-------                                                                                                                              
-  Double_t leta7  = 8654.49315/h_leadEta7->Integral();
-  Double_t leta8  = 797.3526900/h_leadEta8->Integral();
-  Double_t leta9  = 79.02553776/h_leadEta9->Integral();
-  Double_t leta10 = 25.09505908/h_leadEta10->Integral();
-  Double_t leta11 = 4.707368272/h_leadEta11->Integral();
-  Double_t leta12 = 1.621316920/h_leadEta12->Integral();
+  h_sublPR->Add(h_sublPR7,norm7);
+  h_sublPR->Add(h_sublPR8,norm8);
+  h_sublPR->Add(h_sublPR9,norm9);
+  h_sublPR->Add(h_sublPR10,norm10);
+  h_sublPR->Add(h_sublPR11,norm11);
+  h_sublPR->Add(h_sublPR12,norm12);
 
   TH1F* h_leadEta = (TH1F*)h_leadEta7->Clone("h_leadEta");
   h_leadEta->Reset();
 
-  h_leadEta->Add(h_leadEta7,leta7);
-  h_leadEta->Add(h_leadEta8,leta8);
-  h_leadEta->Add(h_leadEta9,leta9);
-  h_leadEta->Add(h_leadEta10,leta10);
-  h_leadEta->Add(h_leadEta11,leta11);
-  h_leadEta->Add(h_leadEta12,leta12);
-
-  //------ subl eta-------
-  Double_t seta7  = 8654.49315/h_sublEta7->Integral();
-  Double_t seta8  = 797.3526900/h_sublEta8->Integral();
-  Double_t seta9  = 79.02553776/h_sublEta9->Integral();
-  Double_t seta10 = 25.09505908/h_sublEta10->Integral();
-  Double_t seta11 = 4.707368272/h_sublEta11->Integral();
-  Double_t seta12 = 1.621316920/h_sublEta12->Integral();
+  h_leadEta->Add(h_leadEta7,norm7);
+  h_leadEta->Add(h_leadEta8,norm8);
+  h_leadEta->Add(h_leadEta9,norm9);
+  h_leadEta->Add(h_leadEta10,norm10);
+  h_leadEta->Add(h_leadEta11,norm11);
+  h_leadEta->Add(h_leadEta12,norm12);
 
   TH1F* h_sublEta = (TH1F*)h_sublEta7->Clone("h_sublEta");
   h_sublEta->Reset();
 
-  h_sublEta->Add(h_sublEta7,seta7);
-  h_sublEta->Add(h_sublEta8,seta8);
-  h_sublEta->Add(h_sublEta9,seta9);
-  h_sublEta->Add(h_sublEta10,seta10);
-  h_sublEta->Add(h_sublEta11,seta11);
-  h_sublEta->Add(h_sublEta12,seta12);
-
-  //-------Mjj-------                                                            
-  Double_t mjj7  = 8654.49315/h_Mjj7->Integral();
-  Double_t mjj8  = 797.3526900/h_Mjj8->Integral();
-  Double_t mjj9  = 79.02553776/h_Mjj9->Integral();
-  Double_t mjj10 = 25.09505908/h_Mjj10->Integral();
-  Double_t mjj11 = 4.707368272/h_Mjj11->Integral();
-  Double_t mjj12 = 1.621316920/h_Mjj12->Integral();
+  h_sublEta->Add(h_sublEta7,norm7);
+  h_sublEta->Add(h_sublEta8,norm8);
+  h_sublEta->Add(h_sublEta9,norm9);
+  h_sublEta->Add(h_sublEta10,norm10);
+  h_sublEta->Add(h_sublEta11,norm11);
+  h_sublEta->Add(h_sublEta12,norm12);
 
   TH1F* h_Mjj = (TH1F*)h_Mjj7->Clone("h_Mjj");
   h_Mjj->Reset();
 
-  h_Mjj->Add(h_Mjj7,mjj7);
-  h_Mjj->Add(h_Mjj8,mjj8);
-  h_Mjj->Add(h_Mjj9,mjj9);
-  h_Mjj->Add(h_Mjj10,mjj10);
-  h_Mjj->Add(h_Mjj11,mjj11);
-  h_Mjj->Add(h_Mjj12,mjj12);
-
-  //------Delta eta-------                                                                                                                         
-  Double_t deta7  = 8654.49315/h_DelEta7->Integral();
-  Double_t deta8  = 797.3526900/h_DelEta8->Integral();
-  Double_t deta9  = 79.02553776/h_DelEta9->Integral();
-  Double_t deta10 = 25.09505908/h_DelEta10->Integral();
-  Double_t deta11 = 4.707368272/h_DelEta11->Integral();
-  Double_t deta12 = 1.621316920/h_DelEta12->Integral();
+  h_Mjj->Add(h_Mjj7,norm7);
+  h_Mjj->Add(h_Mjj8,norm8);
+  h_Mjj->Add(h_Mjj9,norm9);
+  h_Mjj->Add(h_Mjj10,norm10);
+  h_Mjj->Add(h_Mjj11,norm11);
+  h_Mjj->Add(h_Mjj12,norm12);
 
   TH1F* h_DelEta = (TH1F*)h_DelEta7->Clone("h_DelEta");
   h_DelEta->Reset();
 
-  h_DelEta->Add(h_DelEta7,deta7);
-  h_DelEta->Add(h_DelEta8,deta8);
-  h_DelEta->Add(h_DelEta9,deta9);
-  h_DelEta->Add(h_DelEta10,deta10);
-  h_DelEta->Add(h_DelEta11,deta11);
-  h_DelEta->Add(h_DelEta12,deta12);
+  h_DelEta->Add(h_DelEta7,norm7);
+  h_DelEta->Add(h_DelEta8,norm8);
+  h_DelEta->Add(h_DelEta9,norm9);
+  h_DelEta->Add(h_DelEta10,norm10);
+  h_DelEta->Add(h_DelEta11,norm11);
+  h_DelEta->Add(h_DelEta12,norm12);
 
 
 
-  TFile* outfile = new TFile("qcd.root","recreate");
+  TFile* outfile = new TFile("qcd_luminized.root","recreate");
   h_leadDSV->Write("leadDSV");
   h_sublDSV->Write("sublDSV");
   h_leadPt->Write("leadPt");
