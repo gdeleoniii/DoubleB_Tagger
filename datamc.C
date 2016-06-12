@@ -24,7 +24,7 @@
 #include "readSample.h"
  
 using namespace std;
-void dataMC(std::string inputFile, char name) {
+void dataMC(std::string inputFile, std::string name) {
 
     //read the ntuples (in pcncu)
 
@@ -45,6 +45,8 @@ void dataMC(std::string inputFile, char name) {
   TH1F* h_sublEta=new TH1F("","",50,-2.5,2.5);
   TH1F* h_Mjj=new TH1F("","",32,900,2500);
   TH1F* h_DelEta=new TH1F("","",28,0,1.4);
+
+  Long64_t nPass[20] = {0};
 
   //Event loop
   for(Long64_t jEntry=0; jEntry<data.GetEntriesFast() ;jEntry++){
@@ -68,6 +70,40 @@ void dataMC(std::string inputFile, char name) {
     TClonesArray* addjetP4 = (TClonesArray*) data.GetPtrTObject("ADDjetP4");
     Float_t*  addjet_doubleSV = data.GetPtrFloat("ADDjet_DoubleSV");
     
+    //nPass[0] =data.GetEntriesFast();
+
+    std::string* trigName = data.GetPtrString("hlt_trigName");
+    vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
+    const Int_t nsize = data.GetPtrStringSize();
+
+    bool passTrigger=false;
+    for(int it=0; it< nsize; it++)
+      {
+	std::string thisTrig= trigName[it];
+	bool results = trigResult[it];
+
+	// std::cout << thisTrig << " : " << results << std::endl;
+	
+	if( (thisTrig.find("HLT_PFHT800")!= std::string::npos && results==1)
+	    )
+	  {
+	    passTrigger=true;
+	    break;
+	  }
+
+
+      }
+
+
+    if(!passTrigger)continue;
+    nPass[1]++;
+
+
+    //3. has a good vertex
+    Int_t nVtx        = data.GetInt("nVtx");
+    if(nVtx<1)continue;
+    nPass[2]++;
+
     vector<int> fatjet;
     vector<pair<int,int>> Mjj;
     for(int ij=0; ij<nFJets; ij++) {
@@ -137,7 +173,7 @@ void dataMC(std::string inputFile, char name) {
 
   } //end of the event loop
 
-  TFile* outfile = new TFile(Form("qcd_%d.root",name),"recreate");
+  TFile* outfile = new TFile(Form("%s_wtrigg.root",name.data()),"recreate");
   h_leadDSV->Write("leadDSV");
   h_sublDSV->Write("sublDSV");
   h_leadPt->Write("leadPt");
@@ -151,5 +187,6 @@ void dataMC(std::string inputFile, char name) {
   outfile->Write();
 
   std::cout << "Events on lead DSV = " << h_leadDSV->Integral() << std::endl;
-
+  //std::cout << "Total number of Events = " << nPass[0] << std::endl;
+  std::cout << nPass[1] << " " << nPass[2] << std::endl;
 }
