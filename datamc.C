@@ -43,8 +43,23 @@ void dataMC(std::string inputFile, std::string name) {
   TH1F* h_sublPt=new TH1F("","",40,200,1000);
   TH1F* h_leadEta=new TH1F("","",50,-2.5,2.5);
   TH1F* h_sublEta=new TH1F("","",50,-2.5,2.5);
+  TH1F* h_Msubt=new TH1F("","",36,700,2500);
   TH1F* h_Mjj=new TH1F("","",32,900,2500);
   TH1F* h_DelEta=new TH1F("","",28,0,1.4);
+
+  
+  h_leadDSV->Sumw2();
+  h_sublDSV->Sumw2();
+  h_leadPR->Sumw2();
+  h_sublPR->Sumw2();
+  h_leadPt->Sumw2();
+  h_sublPt->Sumw2();
+  h_leadEta->Sumw2();
+  h_sublEta->Sumw2();
+  h_Msubt->Sumw2();
+  h_Mjj->Sumw2();
+  h_DelEta->Sumw2();
+  
 
   Long64_t nPass[20] = {0};
 
@@ -64,13 +79,16 @@ void dataMC(std::string inputFile, std::string name) {
     Float_t*  fatjetPRmassL2L3Corr = data.GetPtrFloat("FATjetPRmassL2L3Corr");
     Int_t*   FATnSubSDJet   = data.GetPtrInt("FATnSubSDJet");
     vector<float>* FATsubjetSDCSV       = data.GetPtrVectorFloat("FATsubjetSDCSV", nFATJet);
+    Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
+    Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
+    Float_t mcWeight  = data.GetFloat("mcWeight");
+
     
     int nADDJet         = data.GetInt("ADDnJet");
     const int nAJets=nADDJet;
     TClonesArray* addjetP4 = (TClonesArray*) data.GetPtrTObject("ADDjetP4");
     Float_t*  addjet_doubleSV = data.GetPtrFloat("ADDjet_DoubleSV");
     
-    //nPass[0] =data.GetEntriesFast();
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
@@ -82,7 +100,6 @@ void dataMC(std::string inputFile, std::string name) {
 	std::string thisTrig= trigName[it];
 	bool results = trigResult[it];
 
-	// std::cout << thisTrig << " : " << results << std::endl;
 	
 	if( (thisTrig.find("HLT_PFHT800")!= std::string::npos && results==1)
 	    )
@@ -108,10 +125,13 @@ void dataMC(std::string inputFile, std::string name) {
     vector<pair<int,int>> Mjj;
     for(int ij=0; ij<nFJets; ij++) {
       TLorentzVector* thisJet = (TLorentzVector*)fatjetP4->At(ij);
-      if(thisJet->Pt()<300)continue;
+      if(thisJet->Pt()<200)continue;
       if(fabs(thisJet->Eta())>2.4)continue;
       if(!passFatJetLooseID[ij])continue;
       if(fatjetPRmassL2L3Corr[ij]<70 || fatjetPRmassL2L3Corr[ij]>200)continue;
+
+      Double_t tau21 = (fatjetTau2[ij]/fatjetTau1[ij]);
+      if(tau21>0.6)continue;
       
       fatjet.push_back(ij);     
     }
@@ -121,16 +141,16 @@ void dataMC(std::string inputFile, std::string name) {
     int fat0=fatjet[0];
     int fat1=fatjet[1];
 
-    h_leadPR->Fill(fatjetPRmass[fat0]);
-    h_sublPR->Fill(fatjetPRmass[fat1]);
+    h_leadPR->Fill(fatjetPRmass[fat0],mcWeight);
+    h_sublPR->Fill(fatjetPRmass[fat1],mcWeight);
 
     TLorentzVector* fatjet0 = (TLorentzVector*)fatjetP4->At(fat0);
     TLorentzVector* fatjet1 = (TLorentzVector*)fatjetP4->At(fat1);
 
-    h_leadPt->Fill(fatjet0->Pt());
-    h_sublPt->Fill(fatjet1->Pt());
-    h_leadEta->Fill(fatjet0->Eta());
-    h_sublEta->Fill(fatjet1->Eta());
+    h_leadPt->Fill(fatjet0->Pt(),mcWeight);
+    h_sublPt->Fill(fatjet1->Pt(),mcWeight);
+    h_leadEta->Fill(fatjet0->Eta(),mcWeight);
+    h_sublEta->Fill(fatjet1->Eta(),mcWeight);
     
     for(unsigned int i=0; i<fatjet.size(); i++) {
       for(unsigned int j=0; j<i; j++) {
@@ -141,10 +161,8 @@ void dataMC(std::string inputFile, std::string name) {
         float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
         if(dEta>1.3)continue;
 
-        h_DelEta->Fill(dEta);
-        
-        Double_t mjj = (*thatJet+*thoseJet).M();
-        if(mjj<1000)continue; 
+        h_DelEta->Fill(dEta,mcWeight);
+
         Mjj.push_back(make_pair(index_that,index_those));
 
       }
@@ -159,7 +177,11 @@ void dataMC(std::string inputFile, std::string name) {
     TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
       
     Float_t mff=(*Jet1+*Jet2).M();
-    h_Mjj->Fill(mff);
+    Float_t msubt = mff-(Jet1->M()-125)-(Jet2->M()-125);
+    if(msubt<800)continue;
+    h_Msubt->Fill(msubt,mcWeight);
+
+    if(mff>1000)h_Mjj->Fill(mff,mcWeight);
 
     int addJetIndex[2]={-1,-1}; 
     for(int ad=0; ad<nAJets; ad++) {
@@ -168,12 +190,12 @@ void dataMC(std::string inputFile, std::string name) {
       if(Jet2->DeltaR(*Jet3)<0.1 && addJetIndex[1] < 0) { addJetIndex[1]=ad;} // first add jet to pass the delta r cut
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
-    h_leadDSV->Fill(addjet_doubleSV[addJetIndex[0]]);
-    h_sublDSV->Fill(addjet_doubleSV[addJetIndex[1]]);   
+    h_leadDSV->Fill(addjet_doubleSV[addJetIndex[0]],mcWeight);
+    h_sublDSV->Fill(addjet_doubleSV[addJetIndex[1]],mcWeight);   
 
   } //end of the event loop
 
-  TFile* outfile = new TFile(Form("%s_wtrigg.root",name.data()),"recreate");
+  TFile* outfile = new TFile(Form("%s_3.root",name.data()),"recreate");
   h_leadDSV->Write("leadDSV");
   h_sublDSV->Write("sublDSV");
   h_leadPt->Write("leadPt");
@@ -182,11 +204,9 @@ void dataMC(std::string inputFile, std::string name) {
   h_sublPR->Write("sublPR");
   h_leadEta->Write("leadEta");
   h_sublEta->Write("sublEta");
+  h_Msubt->Write("Msubt");
   h_Mjj->Write("Mjj");
   h_DelEta->Write("DelEta");
   outfile->Write();
 
-  std::cout << "Events on lead DSV = " << h_leadDSV->Integral() << std::endl;
-  //std::cout << "Total number of Events = " << nPass[0] << std::endl;
-  std::cout << nPass[1] << " " << nPass[2] << std::endl;
 }
