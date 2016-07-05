@@ -82,13 +82,14 @@ void dataMC(std::string inputFile, std::string name) {
     Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
     Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
     Float_t mcWeight  = data.GetFloat("mcWeight");
-
+    //Float_t*  fatjet_doubleSV = data.GetPtrFloat("FATjet_DoubleSV");
     
     int nADDJet         = data.GetInt("ADDnJet");
     const int nAJets=nADDJet;
     TClonesArray* addjetP4 = (TClonesArray*) data.GetPtrTObject("ADDjetP4");
     Float_t*  addjet_doubleSV = data.GetPtrFloat("ADDjet_DoubleSV");
     
+    //nPass[0] =data.GetEntriesFast();
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
@@ -100,6 +101,7 @@ void dataMC(std::string inputFile, std::string name) {
 	std::string thisTrig= trigName[it];
 	bool results = trigResult[it];
 
+	// std::cout << thisTrig << " : " << results << std::endl;
 	
 	if( (thisTrig.find("HLT_PFHT800")!= std::string::npos && results==1)
 	    )
@@ -137,20 +139,7 @@ void dataMC(std::string inputFile, std::string name) {
     }
     
     if(fatjet.size()<2)continue;
-
-    int fat0=fatjet[0];
-    int fat1=fatjet[1];
-
-    h_leadPR->Fill(fatjetPRmass[fat0],mcWeight);
-    h_sublPR->Fill(fatjetPRmass[fat1],mcWeight);
-
-    TLorentzVector* fatjet0 = (TLorentzVector*)fatjetP4->At(fat0);
-    TLorentzVector* fatjet1 = (TLorentzVector*)fatjetP4->At(fat1);
-
-    h_leadPt->Fill(fatjet0->Pt(),mcWeight);
-    h_sublPt->Fill(fatjet1->Pt(),mcWeight);
-    h_leadEta->Fill(fatjet0->Eta(),mcWeight);
-    h_sublEta->Fill(fatjet1->Eta(),mcWeight);
+    
     
     for(unsigned int i=0; i<fatjet.size(); i++) {
       for(unsigned int j=0; j<i; j++) {
@@ -160,9 +149,12 @@ void dataMC(std::string inputFile, std::string name) {
         TLorentzVector* thoseJet = (TLorentzVector*)fatjetP4->At(index_those);
         float dEta = fabs(thatJet->Eta() - thoseJet->Eta());
         if(dEta>1.3)continue;
+        
+        Double_t mjj = (*thatJet+*thoseJet).M();
+        if(mjj<1000)continue; 
 
-        h_DelEta->Fill(dEta,mcWeight);
-
+	h_DelEta->Fill(dEta,mcWeight);
+	h_Mjj->Fill(mjj,mcWeight);
         Mjj.push_back(make_pair(index_that,index_those));
 
       }
@@ -175,14 +167,24 @@ void dataMC(std::string inputFile, std::string name) {
     int ee = Mjj[0].first;
     TLorentzVector* Jet1 = (TLorentzVector*)fatjetP4->At(aa); 
     TLorentzVector* Jet2 = (TLorentzVector*)fatjetP4->At(ee);
-      
+  
+    
     Float_t mff=(*Jet1+*Jet2).M();
     Float_t msubt = mff-(Jet1->M()-125)-(Jet2->M()-125);
     if(msubt<800)continue;
+
+
     h_Msubt->Fill(msubt,mcWeight);
+    h_leadPR->Fill(fatjetPRmass[aa],mcWeight);
+    h_sublPR->Fill(fatjetPRmass[ee],mcWeight);
+    h_leadPt->Fill(Jet1->Pt(),mcWeight);
+    h_sublPt->Fill(Jet2->Pt(),mcWeight);
+    h_leadEta->Fill(Jet1->Eta(),mcWeight);
+    h_sublEta->Fill(Jet2->Eta(),mcWeight);
+    //h_leadDSV->Fill(fatjet_doubleSV[aa]); //,mcWeight);
+    //h_sublDSV->Fill(fatjet_doubleSV[ee]); //,mcWeight);
 
-    if(mff>1000)h_Mjj->Fill(mff,mcWeight);
-
+    
     int addJetIndex[2]={-1,-1}; 
     for(int ad=0; ad<nAJets; ad++) {
       TLorentzVector* Jet3 = (TLorentzVector*)addjetP4->At(ad);
@@ -191,11 +193,12 @@ void dataMC(std::string inputFile, std::string name) {
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
     h_leadDSV->Fill(addjet_doubleSV[addJetIndex[0]],mcWeight);
-    h_sublDSV->Fill(addjet_doubleSV[addJetIndex[1]],mcWeight);   
+    h_sublDSV->Fill(addjet_doubleSV[addJetIndex[1]],mcWeight);  
+     
 
   } //end of the event loop
 
-  TFile* outfile = new TFile(Form("%s_3.root",name.data()),"recreate");
+  TFile* outfile = new TFile(Form("%s_3.0.root",name.data()),"recreate");
   h_leadDSV->Write("leadDSV");
   h_sublDSV->Write("sublDSV");
   h_leadPt->Write("leadPt");
@@ -209,4 +212,7 @@ void dataMC(std::string inputFile, std::string name) {
   h_DelEta->Write("DelEta");
   outfile->Write();
 
+  std::cout << "Events on lead DSV = " << h_leadDSV->Integral() << std::endl;
+  //std::cout << "Total number of Events = " << nPass[0] << std::endl;
+  std::cout << nPass[1] << " " << nPass[2] << std::endl;
 }
