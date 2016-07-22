@@ -81,7 +81,7 @@ void QCD_HT() {
   TH1F* hDelEta = (TH1F*)h_DelEta[1]->Clone("hDelEta");
   hDelEta->Reset();
 
-  for(int x=0;x<5;x++) {
+  for(int x=1;x<5;x++) {
     hleadDSV->Add(h_leadDSV[x],norm[x]);
     hsublDSV->Add(h_sublDSV[x],norm[x]);
     hleadPt->Add(h_leadPt[x],norm[x]);
