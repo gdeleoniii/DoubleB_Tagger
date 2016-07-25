@@ -46,8 +46,14 @@ void dataMC(std::string inputFile, std::string name) {
   TH1F* h_Msubt=new TH1F("","",36,700,2500);
   TH1F* h_Mjj=new TH1F("","",32,900,2500);
   TH1F* h_DelEta=new TH1F("","",28,0,1.4);
+  TH1F* h_HT  = new TH1F("","",255,0,5100);
 
-  /*
+
+  TProfile* p1 = new TProfile("","",40,200,1000,-1,1);
+  TProfile* p2 = new TProfile("","",40,200,1000,-1,1);
+  TProfile* p3 = new TProfile("","",20,50,250,-1,1);
+  TProfile* p4 = new TProfile("","",20,50,250,-1,1);
+
   h_leadDSV->Sumw2();
   h_sublDSV->Sumw2();
   h_leadPR->Sumw2();
@@ -59,7 +65,7 @@ void dataMC(std::string inputFile, std::string name) {
   h_Msubt->Sumw2();
   h_Mjj->Sumw2();
   h_DelEta->Sumw2();
-  */
+  h_HT->Sumw2();
 
   Long64_t nPass[20] = {0};
 
@@ -81,7 +87,8 @@ void dataMC(std::string inputFile, std::string name) {
     vector<float>* FATsubjetSDCSV       = data.GetPtrVectorFloat("FATsubjetSDCSV", nFATJet);
     Float_t*  fatjetTau1 = data.GetPtrFloat("FATjetTau1");
     Float_t*  fatjetTau2 = data.GetPtrFloat("FATjetTau2");
-    //Float_t mcWeight  = data.GetFloat("mcWeight");
+    //Float_t  mcWeight  = data.GetFloat("mcWeight");
+    Float_t HT         = data.GetFloat("HT");
     //Float_t*  fatjet_doubleSV = data.GetPtrFloat("FATjet_DoubleSV");
     
     int nADDJet         = data.GetInt("ADDnJet");
@@ -153,8 +160,8 @@ void dataMC(std::string inputFile, std::string name) {
         Double_t mjj = (*thatJet+*thoseJet).M();
         if(mjj<1000)continue; 
 
-	h_DelEta->Fill(dEta); //,mcWeight);
-	h_Mjj->Fill(mjj); //,mcWeight);
+	//h_DelEta->Fill(dEta); //,mcWeight);
+	//h_Mjj->Fill(mjj); //,mcWeight);
         Mjj.push_back(make_pair(index_that,index_those));
 
       }
@@ -170,7 +177,9 @@ void dataMC(std::string inputFile, std::string name) {
   
     
     Float_t mff=(*Jet1+*Jet2).M();
+    Float_t DelEta = fabs(Jet1->Eta() - Jet2->Eta()); 
     Float_t msubt = mff-(Jet1->M()-125)-(Jet2->M()-125);
+    Float_t sum = HT;
     if(msubt<800)continue;
 
 
@@ -181,6 +190,9 @@ void dataMC(std::string inputFile, std::string name) {
     h_sublPt->Fill(Jet2->Pt()); //,mcWeight);
     h_leadEta->Fill(Jet1->Eta()); //,mcWeight);
     h_sublEta->Fill(Jet2->Eta()); //,mcWeight);
+    h_Mjj->Fill(mff); //,mcWeight);
+    h_DelEta->Fill(DelEta); //,mcWeight);
+    h_HT->Fill(sum); //,mcWeight);
     //h_leadDSV->Fill(fatjet_doubleSV[aa]); //,mcWeight);
     //h_sublDSV->Fill(fatjet_doubleSV[ee]); //,mcWeight);
 
@@ -195,10 +207,14 @@ void dataMC(std::string inputFile, std::string name) {
     h_leadDSV->Fill(addjet_doubleSV[addJetIndex[0]]); //,mcWeight);
     h_sublDSV->Fill(addjet_doubleSV[addJetIndex[1]]); //,mcWeight);  
      
+    p1->Fill(Jet1->Pt(),addjet_doubleSV[addJetIndex[0]]);
+    p2->Fill(Jet2->Pt(),addjet_doubleSV[addJetIndex[1]]);
+    p3->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
+    p4->Fill(fatjetPRmass[ee],addjet_doubleSV[addJetIndex[1]]);
 
   } //end of the event loop
 
-  TFile* outfile = new TFile(Form("%s_3.0.root",name.data()),"recreate");
+  TFile* outfile = new TFile(Form("%s_3.0.2.root",name.data()),"recreate");
   h_leadDSV->Write("leadDSV");
   h_sublDSV->Write("sublDSV");
   h_leadPt->Write("leadPt");
@@ -210,6 +226,11 @@ void dataMC(std::string inputFile, std::string name) {
   h_Msubt->Write("Msubt");
   h_Mjj->Write("Mjj");
   h_DelEta->Write("DelEta");
+  h_HT->Write("HT");
+  p1->Write("p1");
+  p2->Write("p2");
+  p3->Write("p3");
+  p4->Write("p4");
   outfile->Write();
 
   std::cout << "Events on lead DSV = " << h_leadDSV->Integral() << std::endl;
