@@ -24,8 +24,7 @@
 #include "readSample.h"
  
 using namespace std;
-void dbtdependence(std::string inputFile, std::string name) {
-
+void dbtdependence(std::string inputFile) {
 
   int total = 0;
   //read the ntuples (in pcncu)
@@ -36,15 +35,14 @@ void dbtdependence(std::string inputFile, std::string name) {
     
   TreeReader data(infiles);
     
+  TH2F* h1=new TH2F("","",28,60,200,20,-1,1);
+  TH1F* h2=new TH1F("","",28,60,200);
+  //h1->Sumw2();
 
-  TProfile* p_tau21_700to1500_before = new TProfile("","",14,60,200,0,1);
-  TProfile* p_tau21_1500_before = new TProfile("","",14,60,200,0,1);
-  TProfile* p_tau21_700to1500_after = new TProfile("","",14,60,200,0,1);
-  TProfile* p_tau21_1500_after = new TProfile("","",14,60,200,0,1);
-  TProfile* p_dbt_700to1500_before = new TProfile("","",14,60,200,-1,1);
-  TProfile* p_dbt_1500_before = new TProfile("","",14,60,200,-1,1);
-  TProfile* p_dbt_700to1500_after = new TProfile("","",14,60,200,-1,1);
-  TProfile* p_dbt_1500_after = new TProfile("","",14,60,200,-1,1);
+
+  Long64_t npass2[28] = {0};
+  Long64_t nfail2[28] = {0};
+  Long64_t DENOM = 0;
 
   total += data.GetEntriesFast();
   //Event loop
@@ -115,8 +113,8 @@ void dbtdependence(std::string inputFile, std::string name) {
       if(!FATjetPassIDTight[ij])continue;
       if(fatjetPRmassL2L3Corr[ij]<70 || fatjetPRmassL2L3Corr[ij]>200)continue;
 
-      //Double_t tau21 = (fatjetTau2[ij]/fatjetTau1[ij]);
-      //if(tau21>0.6)continue;
+      Double_t tau21 = (fatjetTau2[ij]/fatjetTau1[ij]);
+      if(tau21>0.6)continue;
       
       fatjet.push_back(ij);     
     }
@@ -153,8 +151,8 @@ void dbtdependence(std::string inputFile, std::string name) {
     Float_t mff=(*Jet1+*Jet2).M();
     Float_t msubt = mff-(fatjetPRmass[aa]-125)-(fatjetPRmass[ee]-125);
     if(msubt<800)continue;
-    Double_t leadtau21 = (fatjetTau2[aa]/fatjetTau1[aa]);
-    Double_t subltau21 = (fatjetTau2[ee]/fatjetTau1[ee]);
+    //Double_t leadtau21 = (fatjetTau2[aa]/fatjetTau1[aa]);
+    //Double_t subltau21 = (fatjetTau2[ee]/fatjetTau1[ee]);
     
     int addJetIndex[2]={-1,-1}; 
     for(int ad=0; ad<nAJets; ad++) {
@@ -164,41 +162,49 @@ void dbtdependence(std::string inputFile, std::string name) {
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
 
+    DENOM+= 1;
+    Float_t bin1= 60;
+    Float_t bin2= 65;
 
-
-    if(mff>700 && mff<1500) {
-      p_tau21_700to1500_before->Fill(fatjetPRmass[aa],leadtau21);
-      p_dbt_700to1500_before->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
+    for(int i = 0; i < 28; i++) {
+      if(fatjetPRmass[aa]>bin1 && fatjetPRmass[aa]<bin2) {
+	if(addjet_doubleSV[addJetIndex[0]]>0.6)npass2[i]++;
+	else if(addjet_doubleSV[addJetIndex[0]]<0.6)nfail2[i]++;
+      }
+      bin1+=5;
+      bin2+=5; 
     }
+    
 
-    if(mff>1500) { 
-      p_tau21_1500_before->Fill(fatjetPRmass[aa],leadtau21);
-      p_dbt_1500_before->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
-    }
-
-    if(addjet_doubleSV[addJetIndex[0]]>0.6) {
-      if(mff>700 && mff<1500)p_tau21_700to1500_after->Fill(fatjetPRmass[aa],leadtau21);
-      if(mff>1500)p_tau21_1500_after->Fill(fatjetPRmass[aa],leadtau21);
-    }
-
-    if(leadtau21<0.6) {
-      if(mff>700 && mff<1500)p_dbt_700to1500_after->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
-      if(mff>1500)p_dbt_1500_after->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
-    }
-
-
+    h1->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
+    h2->Fill(fatjetPRmass[aa]);
 
   } //end of the event loop
   cout<<"entries="<<total<<endl;
+  cout<<"events="<<DENOM<<endl;
+  float bin3 = 60;
+  float bin4 = 65;
 
-  TFile* outfile = new TFile(Form("%s_dbtdependence.3.0.root",name.data()),"recreate");
-  p_tau21_700to1500_before->Write("tau21vsPR_700to1500_before");
-  p_tau21_1500_before->Write("tau21vsPR_1500_before");
-  p_tau21_700to1500_after->Write("tau21vsPR_700to1500_after");
-  p_tau21_1500_after->Write("tau21vsPR_1500_after");
-  p_dbt_700to1500_before->Write("DBTvsPR_700to1500_before");
-  p_dbt_1500_before->Write("DBTvsPR_1500_before");
-  p_dbt_700to1500_after->Write("DBTvsPR_700to1500_after");
-  p_dbt_1500_after->Write("DBTvsPR_1500_after");
-  outfile->Write();
+  for(int g=0;g<28;g++) {
+
+    std::cout << "bin " << bin3 << " to " << bin4 << " = " << npass2[g] << " " << nfail2[g] << std::endl;
+    //cout <<npass2[g]<< " " << nfail2[g] <<endl;
+    bin3+=5;
+    bin4+=5;
+  }
+  
+
+  /*
+  Int_t nbin = h1->GetNbinsX();
+  Float_t npass[nbin];
+  Float_t nfail[nbin];
+  Double_t ratio[nbin];
+
+  for(Int_t i = 1; i <= nbin; i++){
+    npass[i] = h1->Integral(i-1,i,16,20);
+    nfail[i] = h1->Integral(i-1,i,0,16);
+
+    cout <<i << "  = " << npass[i] << " " << nfail[i] << " " << npass[i]/nfail[i] << endl;
+    } */ 
+
 }
