@@ -34,15 +34,9 @@ void dbtdependence(std::string inputFile) {
   readSample(inputFile, infiles);
     
   TreeReader data(infiles);
-    
-  TH2F* h1=new TH2F("","",28,60,200,20,-1,1);
-  TH1F* h2=new TH1F("","",28,60,200);
-  //h1->Sumw2();
-
 
   Long64_t npass2[28] = {0};
   Long64_t nfail2[28] = {0};
-  Long64_t DENOM = 0;
 
   total += data.GetEntriesFast();
   //Event loop
@@ -162,7 +156,7 @@ void dbtdependence(std::string inputFile) {
     }
     if(addJetIndex[0]<0 || addJetIndex[1]<0)continue;
 
-    DENOM+= 1;
+
     Float_t bin1= 60;
     Float_t bin2= 65;
 
@@ -174,10 +168,6 @@ void dbtdependence(std::string inputFile) {
       bin1+=5;
       bin2+=5; 
     }
-    
-
-    h1->Fill(fatjetPRmass[aa],addjet_doubleSV[addJetIndex[0]]);
-    h2->Fill(fatjetPRmass[aa]);
 
   } //end of the event loop
   cout<<"entries="<<total<<endl;
@@ -186,25 +176,10 @@ void dbtdependence(std::string inputFile) {
   float bin4 = 65;
 
   for(int g=0;g<28;g++) {
-
     std::cout << "bin " << bin3 << " to " << bin4 << " = " << npass2[g] << " " << nfail2[g] << std::endl;
-    //cout <<npass2[g]<< " " << nfail2[g] <<endl;
     bin3+=5;
     bin4+=5;
   }
   
-
-  /*
-  Int_t nbin = h1->GetNbinsX();
-  Float_t npass[nbin];
-  Float_t nfail[nbin];
-  Double_t ratio[nbin];
-
-  for(Int_t i = 1; i <= nbin; i++){
-    npass[i] = h1->Integral(i-1,i,16,20);
-    nfail[i] = h1->Integral(i-1,i,0,16);
-
-    cout <<i << "  = " << npass[i] << " " << nfail[i] << " " << npass[i]/nfail[i] << endl;
-    } */ 
 
 }
